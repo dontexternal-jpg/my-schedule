@@ -1,18 +1,18 @@
 import { useState } from "react";
 
 const T = {
-  personal:      { b: "#E8A55A", bg: "#FEF6EC", c: "#7A4520", tag: "Morning" },
-  school:        { b: "#5BAEE8", bg: "#EBF4FF", c: "#0C447C", tag: "School" },
-  study:         { b: "#6DC240", bg: "#EEF7E3", c: "#27500A", tag: "Study" },
-  "study-opt":   { b: "#3EC9A7", bg: "#E5F7F2", c: "#085041", tag: "Optional" },
-  buffer:        { b: "#F5A623", bg: "#FFF8E6", c: "#7A4E10", tag: "Buffer" },
-  free:          { b: "#AAAA9F", bg: "#F3F3F0", c: "#444440", tag: "Free" },
-  "lion-dance":  { b: "#E85555", bg: "#FEF0F0", c: "#7A1F1F", tag: "Lion Dance" },
-  temple:        { b: "#9B8FE8", bg: "#F3F0FD", c: "#3C2E89", tag: "Temple" },
-  "viet-school": { b: "#E8834B", bg: "#FEF3EC", c: "#7A3A10", tag: "Viet. School" },
-  "wind-down":   { b: "#C8A8E8", bg: "#F8F0FD", c: "#4A3070", tag: "Wind Down" },
-  sleep:         { b: "#7070A8", bg: "#EEECF8", c: "#2D2D5A", tag: "Sleep" },
-  workout:       { b: "#E84040", bg: "#FFF2F2", c: "#7A0A0A", tag: "💪 Workout" },
+  personal:    { b: "#E8A55A", bg: "#FEF6EC", c: "#7A4520", tag: "Morning" },
+  school:      { b: "#5BAEE8", bg: "#EBF4FF", c: "#0C447C", tag: "School" },
+  study:       { b: "#6DC240", bg: "#EEF7E3", c: "#27500A", tag: "Study" },
+  "study-opt": { b: "#3EC9A7", bg: "#E5F7F2", c: "#085041", tag: "Optional" },
+  buffer:      { b: "#F5A623", bg: "#FFF8E6", c: "#7A4E10", tag: "Buffer" },
+  free:        { b: "#AAAA9F", bg: "#F3F3F0", c: "#444440", tag: "Free" },
+  "lion-dance":{ b: "#E85555", bg: "#FEF0F0", c: "#7A1F1F", tag: "Lion Dance" },
+  temple:      { b: "#9B8FE8", bg: "#F3F0FD", c: "#3C2E89", tag: "Temple" },
+  "viet-school":{ b: "#E8834B", bg: "#FEF3EC", c: "#7A3A10", tag: "Viet. School" },
+  "wind-down": { b: "#C8A8E8", bg: "#F8F0FD", c: "#4A3070", tag: "Wind Down" },
+  sleep:       { b: "#7070A8", bg: "#EEECF8", c: "#2D2D5A", tag: "Sleep" },
+  workout:     { b: "#E84040", bg: "#FFF2F2", c: "#7A0A0A", tag: "💪 Workout" },
 };
 
 const DAY_ACCENT = {
@@ -20,205 +20,282 @@ const DAY_ACCENT = {
   Thu: "#6DC240", Fri: "#E85555", Sat: "#E84040", Sun: "#E8834B",
 };
 
-const WORKOUT_SUBJECTS = [
-  "🔥 Warmup · 4 min: High Knees, Arm Circles (2 sets), Hip Circles, Leg Swings, Bodyweight Squat",
-  "💪 Main Circuit · 34 min: Romanian DL (3×17), Floor Press (3×13-15), Squeeze Press (2×12), Hammer Curl (3×4-6), Goblet Squat (2×22), DB Row (3×15-16)",
-  "🏋️ Core + Shoulder + Arms + Calf · 33 min: Bulgarian Split Squat, Shoulder Press, Zottman Curl, Russian Twist, Tricep Extension, Wrist Curl, Lateral Raise, Calf Raise",
-  "🎯 Finisher · 8 min: Dead Bug (3×10), Farmer's Hold (2 sets)",
-  "⏱️ Total: ~2 hours including rest between blocks",
-];
-
-const WORKOUT_NOTE_EVE = "Eat during the 4:55 PM long study break — pre-workout meal window. Workout ends at 7:15 PM, giving you 2h15m before sleep. This is the tighter end of the gray zone — resistance training is more forgiving than cardio on sleep quality, so most people handle it fine. If you notice sleep issues, shift dinner to 4:30 and start at 5:00 instead.";
-const WORKOUT_NOTE_SAT = "Best timing of the week: finishing at 9:15 AM puts 12+ hours between the workout and bedtime — zero sleep interference. Post-exercise cognition is enhanced for 1–2 hrs afterward, so your review right after is a bonus.";
-
-const SAT_MORNING = [
-  { t: "7:00–7:15 AM", l: "Wake up + quick prep", type: "personal", note: "Set your alarm for 7:00 AM the night before. 15 min to change, hydrate, and get ready." },
-  { t: "7:15–9:15 AM", l: "Full-Body Workout", type: "workout", note: WORKOUT_NOTE_SAT, subjects: WORKOUT_SUBJECTS },
-  { t: "9:15–9:35 AM", l: "Shower + breakfast", type: "buffer", note: "Post-workout shower + real breakfast. Protein-rich — you earned it." },
-  { t: "9:35–10:00 AM", l: "Light review + task check", type: "study-opt",
-    note: "Weekends are for recharging. 25 min max — scan what's due Monday, finish any tiny hanging tasks, then close the books.",
-    subjects: ["Check what's due Monday", "Finish any task under 10 min", "Stop at 10:00 — no exceptions"] },
-];
-
-const SCHEDULE = {
-  Mon: {
-    label: "Monday", sub: "School + Full Study Evening",
-    tip: "Your main study day. Start with History right after your snack — hardest task first while your brain is still warm from school.",
-    blocks: [
-      { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
-      { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
-      { t: "2:40–3:00 PM", l: "Decompress + snack", type: "buffer", note: "Non-negotiable buffer — your brain needs this after 7+ hrs of school." },
-      { t: "3:00–5:15 PM", l: "Main Study Block", type: "study", pom: 4,
-        subjects: ["Pomodoro 1: 3:00–3:25 → History (hardest first)", "Break: 3:25–3:30", "Pomodoro 2: 3:30–3:55 → History continued", "Break: 3:55–4:00", "Pomodoro 3: 4:00–4:25 → Psychology", "Break: 4:25–4:30", "Pomodoro 4: 4:30–4:55 → English / overflow", "Long break: 4:55–5:15"] },
-      { t: "5:15–6:15 PM", l: "Dinner / Personal time", type: "buffer", note: "Flex block — eat, relax. Don't study during this time." },
-      { t: "6:15–7:30 PM", l: "Optional Study Block 2", type: "study-opt", pom: 3,
-        subjects: ["Only use this if homework isn't finished", "Pomodoro 1–3: 6:15–7:20 → whatever's left", "Stop at 7:30 — no exceptions"] },
-      { t: "7:30–8:30 PM", l: "Free time", type: "free" },
-      { t: "8:30–9:30 PM", l: "Wind down + prep", type: "wind-down", note: "No screens after 9 PM. Lay out tomorrow's things, check Outlook." },
-      { t: "9:30 PM", l: "Lights out", type: "sleep" },
+const SESSIONS = {
+  A: {
+    label: "A · Push",
+    color: "#F97316",
+    est: "~50 min",
+    subjects: [
+      "🔥 Warmup · 4 min: Arm Circles (2 sets), Shoulder Rotations, Bodyweight Push-up, Wrist Circles",
+      "💪 Floor Press (Dumbbell) · 3 sets × 10–20 reps · Rest 1m 30s",
+      "💪 Squeeze Press (Dumbbell) · 2 sets × 6–9 reps · Rest 1m 30s",
+      "💪 Shoulder Press (Dumbbell) · 3 sets × 8–14 reps · Rest 1m 15s",
+      "💪 Triceps Extension (Dumbbell) · 2 sets × 10–14 reps · Rest 1m 00s",
+      "💪 Lateral Raise (Dumbbell) · 2 sets × 1–3 reps · Rest 1m 15s",
+      "⏱️ Total: ~50 min including warmup and rest",
     ],
   },
-
-  Tue: {
-    label: "Tuesday", sub: "School + Study + 💪 Workout 5:15–7:15 PM",
-    tip: "Workout day. Eat your main meal during the 4:55 PM long break, then train 5:15–7:15 PM. The 2h15m buffer before sleep is on the tighter side but manageable — resistance training is easier on sleep than cardio. Research shows afternoon/evening training produces up to 84% more muscle gain vs. morning.",
-    blocks: [
-      { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
-      { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
-      { t: "2:40–3:00 PM", l: "Decompress + snack", type: "buffer", note: "Non-negotiable buffer — recharge before studying." },
-      { t: "3:00–5:15 PM", l: "Main Study Block", type: "study", pom: 4,
-        subjects: ["Pomodoro 1: 3:00–3:25 → History (hardest first)", "Break: 3:25–3:30", "Pomodoro 2: 3:30–3:55 → History continued", "Break: 3:55–4:00", "Pomodoro 3: 4:00–4:25 → Psychology", "Break: 4:25–4:30", "Pomodoro 4: 4:30–4:55 → English / overflow", "Long break: 4:55–5:15 → 🍽️ Eat dinner here — pre-workout meal window"] },
-      { t: "5:15–7:15 PM", l: "Full-Body Workout", type: "workout", note: WORKOUT_NOTE_EVE, subjects: WORKOUT_SUBJECTS },
-      { t: "7:15–7:45 PM", l: "Shower + protein", type: "buffer", note: "Protein shake or meal within 30–60 min post-workout. Keep this block calm — it's recovery, not free time." },
-      { t: "7:45–8:30 PM", l: "Free time", type: "free" },
-      { t: "8:30–9:30 PM", l: "Wind down + prep", type: "wind-down", note: "No screens after 9 PM. Lay out tomorrow's things, check Outlook." },
-      { t: "9:30 PM", l: "Lights out", type: "sleep" },
+  B: {
+    label: "B · Pull",
+    color: "#38BDF8",
+    est: "~55 min",
+    subjects: [
+      "🔥 Warmup · 4 min: Arm Circles (2 sets), Hip Circles, Shoulder Rotations, Good Morning (10 reps)",
+      "💪 Dumbbell Row · 3 sets × 10–17 reps · Rest 1m 15s · swap at one arm's max",
+      "💪 Hammer Curl (alternating) · 3 sets × 1–4 reps · Rest 1m 45s",
+      "💪 Zottman Curl · 2 sets × 2–6 reps · Rest 1m 00s · 3-sec eccentric",
+      "💪 Seated Wrist Curl · 4 sets × 11–30 reps · Rest 0m 30s · strip to 9 lb",
+      "🎯 Finisher — Farmer's Hold · 2 sets · Rest 0m 45s · reload both to 21.5 lb",
+      "⏱️ Total: ~55 min including warmup and rest",
     ],
   },
-
-  Wed: {
-    label: "Wednesday", sub: "Short Day — Home 12:40 PM + Lion Dance (4:30–8:30)",
-    tip: "Short day = your second-best study window of the week. You have 3+ hours before practice. Use it — this is your buffer for the whole week. No workout today — Lion Dance is physically demanding and you trained yesterday.",
-    blocks: [
-      { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
-      { t: "7:00 AM–12:40 PM", l: "School (Short Day)", type: "school", note: "Early dismissal — you're home by 12:40." },
-      { t: "12:40–1:00 PM", l: "Decompress + lunch", type: "buffer", note: "Eat, decompress. Big study block ahead." },
-      { t: "1:00–3:30 PM", l: "Main Study Block", type: "study", pom: 5,
-        subjects: ["Pomodoro 1: 1:00–1:25 → History (hardest, do it fresh)", "Break: 1:25–1:30", "Pomodoro 2: 1:30–1:55 → History continued", "Break: 1:55–2:00", "Pomodoro 3: 2:00–2:25 → Psychology", "Break: 2:25–2:30", "Pomodoro 4: 2:30–2:55 → English", "Break: 2:55–3:00", "Pomodoro 5: 3:00–3:25 → overflow / review", "Wind down: 3:25–3:30"] },
-      { t: "3:30–4:30 PM", l: "Long break + pack for practice", type: "buffer", note: "Rest up and get ready — you've earned a proper break. Don't study during this." },
-      { t: "4:30–8:30 PM", l: "Lion Dance Practice", type: "lion-dance" },
-      { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down", note: "Light review optional — max 20 min. No new material. You earned rest." },
-      { t: "9:30 PM", l: "Lights out", type: "sleep" },
+  C: {
+    label: "C · Legs + Core",
+    color: "#4ADE80",
+    est: "~60 min",
+    subjects: [
+      "🔥 Warmup · 4 min: High Knees 30s, Hip Circles, Leg Swings, Bodyweight Squat (10 reps)",
+      "💪 Romanian Deadlift (B stance) · 3 sets × 20–30 reps · Rest 2m 00s",
+      "💪 Bulgarian Split Squat · 3 sets × 14–17 reps · Rest 1m 30s · strip 4 × 3.5 lb plates",
+      "💪 Goblet Squat · 2 sets × 25–35 reps · Rest 1m 30s · hold at chest",
+      "💪 Single Leg Calf Raise · 2 sets × 14–19 reps · Rest 1m 00s · other db → 20 lb",
+      "💪 Russian Twist (1 db) · 2 sets × 22–25 reps · Rest 0m 45s",
+      "🎯 Finisher — Dead Bug · 3 sets × 10–16 reps · Rest 0m 45s",
+      "⏱️ Total: ~60 min including warmup and rest",
     ],
-  },
-
-  Thu: {
-    variants: {
-      practice: {
-        label: "Thursday", sub: "School + Lion Dance (3:30–8:00 PM) — No Workout",
-        tip: "Practice day: no time or energy for the full workout. Three consecutive Lion Dance days (Wed/Thu/Fri) plus Tuesday's workout is already a heavy load. Skip and recover. This week is Tue + Sat — still effective per volume research.",
-        blocks: [
-          { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
-          { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
-          { t: "2:40–3:30 PM", l: "Decompress + pack bag", type: "buffer", note: "Eat a snack and pack your bag — the 3:30 start already accounts for travel." },
-          { t: "3:30–8:00 PM", l: "Lion Dance Practice", type: "lion-dance" },
-          { t: "8:00–8:30 PM", l: "Decompress + snack", type: "buffer", note: "Big practice — refuel before wind down. No studying tonight." },
-          { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down", note: "Check tomorrow's assignments in Outlook. Max 10-min light review only." },
-          { t: "9:30 PM", l: "Lights out", type: "sleep" },
-        ],
-      },
-      free: {
-        label: "Thursday", sub: "School + Study + 💪 Workout 5:15–7:15 PM",
-        tip: "Lucky free Thursday — same structure as Tuesday. If you're sore from Wednesday's Lion Dance, reduce load by ~20% but keep the session. Consistency matters more than any single set.",
-        blocks: [
-          { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
-          { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
-          { t: "2:40–3:00 PM", l: "Decompress + snack", type: "buffer", note: "No rush today — full evening ahead." },
-          { t: "3:00–5:15 PM", l: "Main Study Block", type: "study", pom: 4,
-            subjects: ["Pomodoro 1: History (if still pending from Mon–Wed)", "Pomodoro 2: English essay drafting", "Pomodoro 3: Psychology deep review", "Pomodoro 4: Any overflow / reading", "Long break: 4:55–5:15 → 🍽️ Eat dinner here — pre-workout meal window"] },
-          { t: "5:15–7:15 PM", l: "Full-Body Workout", type: "workout", note: WORKOUT_NOTE_EVE, subjects: WORKOUT_SUBJECTS },
-          { t: "7:15–7:45 PM", l: "Shower + protein", type: "buffer", note: "Protein within 30–60 min post-workout. Recovery time — not study time." },
-          { t: "7:45–8:30 PM", l: "Free time", type: "free" },
-          { t: "8:30–9:30 PM", l: "Wind down + prep", type: "wind-down", note: "Check what's due Friday. Set Outlook blocks for the rest of the week." },
-          { t: "9:30 PM", l: "Lights out", type: "sleep" },
-        ],
-      },
-    },
-  },
-
-  Fri: {
-    label: "Friday", sub: "School + Lion Dance (4:30–8:30 PM)",
-    tip: "Tight but usable 90-min window after school before practice. Prioritize finishing anything due Monday — don't leave the weekend carrying schoolwork.",
-    blocks: [
-      { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
-      { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
-      { t: "2:40–3:00 PM", l: "Decompress + snack", type: "buffer", note: "Quick reset before your study window." },
-      { t: "3:00–4:30 PM", l: "Pre-Practice Study Block", type: "study", pom: 2,
-        subjects: ["Pomodoro 1: 3:00–3:25 → Most urgent leftover work (History or English)", "Break: 3:25–3:30", "Pomodoro 2: 3:30–3:55 → Psychology review or weekend preview", "Wind down / pack bag: 3:55–4:30"] },
-      { t: "4:30–8:30 PM", l: "Lion Dance Practice", type: "lion-dance" },
-      { t: "8:30–9:00 PM", l: "Decompress + wind down", type: "wind-down", note: "Big practice night — no studying. Lay out Saturday things and get to bed." },
-      { t: "9:00 PM", l: "Lights out", type: "sleep" },
-    ],
-  },
-
-  Sat: {
-    variants: {
-      temple: {
-        label: "Saturday", sub: "💪 Workout 7:15–9:15 AM · Temple (11:00 AM–5:30 PM)",
-        tip: "Workout done before 9:15 AM, light review done by 10:00 AM — roll into Temple with everything handled and the evening completely free.",
-        blocks: [
-          ...SAT_MORNING,
-          { t: "10:00–11:00 AM", l: "Free time + get ready for Temple", type: "free", note: "Plenty of time to get ready — the 11:00 AM start already accounts for travel." },
-          { t: "11:00 AM–5:30 PM", l: "Temple", type: "temple" },
-          { t: "5:30–6:30 PM", l: "Decompress + dinner", type: "buffer", note: "Long day — decompress properly before anything else." },
-          { t: "6:30–8:30 PM", l: "Free time", type: "free" },
-          { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down" },
-          { t: "9:30 PM", l: "Lights out", type: "sleep" },
-        ],
-      },
-      short: {
-        label: "Saturday", sub: "💪 Workout 7:15–9:15 AM · Temple Short Day (11:00 AM–4:30 PM)",
-        tip: "Home by 4:30 — that's 5 extra hours compared to the full temple day. Workout is already done, review is done. The afternoon is genuinely yours.",
-        blocks: [
-          ...SAT_MORNING,
-          { t: "10:00–11:00 AM", l: "Free time + get ready for Temple", type: "free", note: "Short day today — home by 4:30." },
-          { t: "11:00 AM–4:30 PM", l: "Temple", type: "temple" },
-          { t: "4:30–5:30 PM", l: "Decompress + dinner", type: "buffer", note: "You're home early — take a real break." },
-          { t: "5:30–8:30 PM", l: "Free time", type: "free" },
-          { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down" },
-          { t: "9:30 PM", l: "Lights out", type: "sleep" },
-        ],
-      },
-      nope: {
-        label: "Saturday", sub: "💪 Workout 7:15–9:15 AM · Free Day",
-        tip: "Rare full free Saturday. Workout done early, 25-min review done by 10:00 AM — the entire rest of the day is yours. Don't fill it with study. This is recovery time.",
-        blocks: [
-          ...SAT_MORNING,
-          { t: "10:00 AM–12:00 PM", l: "Free time", type: "free" },
-          { t: "12:00–1:00 PM", l: "Lunch", type: "buffer" },
-          { t: "1:00–6:00 PM", l: "Free time / personal", type: "free" },
-          { t: "6:00–7:00 PM", l: "Dinner", type: "buffer" },
-          { t: "7:00–8:30 PM", l: "Free time", type: "free" },
-          { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down", note: "Quick Outlook check for the week ahead. Then proper wind-down." },
-          { t: "9:30 PM", l: "Lights out", type: "sleep" },
-        ],
-      },
-    },
-  },
-
-  Sun: {
-    variants: {
-      viet: {
-        label: "Sunday", sub: "Vietnamese School (12:00–4:00 PM)",
-        tip: "Light morning, then school, then free. A 30-min review is all you need — no heavy study on Sundays. The recharge matters.",
-        blocks: [
-          { t: "9:00–9:30 AM", l: "Light review + weekly check", type: "study-opt",
-            note: "30 min max. Scan what's due this week, set Outlook blocks, finish anything under 10 min. Then stop.",
-            subjects: ["Check what's due Mon–Tue", "Set Outlook study blocks for the week", "Any task under 10 min — do it now or drop it"] },
-          { t: "9:30 AM–12:00 PM", l: "Free time / prep", type: "free" },
-          { t: "12:00–4:00 PM", l: "Vietnamese School", type: "viet-school" },
-          { t: "4:00–8:30 PM", l: "Decompress + dinner + free time", type: "free", note: "Rest, eat, do whatever. No study tonight." },
-          { t: "8:30–9:30 PM", l: "Wind down + Outlook check", type: "wind-down", note: "10 min: confirm Outlook blocks are in place for the week. Then wind down properly." },
-          { t: "9:30 PM", l: "Lights out", type: "sleep" },
-        ],
-      },
-      free: {
-        label: "Sunday", sub: "Free Day — Light Review Only",
-        tip: "Full free Sunday. Do the 30-min review so Monday doesn't blindside you, then genuinely rest. This is the most important recovery day of your week.",
-        blocks: [
-          { t: "9:00–9:30 AM", l: "Light review + weekly check", type: "study-opt",
-            note: "No school today — keep it genuinely light. Scan the week ahead and set Outlook, nothing more.",
-            subjects: ["Check what's due Mon–Tue", "Set Outlook study blocks for the week", "Stop at 9:30 — rest day"] },
-          { t: "9:30 AM–12:00 PM", l: "Free time", type: "free" },
-          { t: "12:00–1:00 PM", l: "Lunch", type: "buffer" },
-          { t: "1:00–8:30 PM", l: "Free time / personal / dinner", type: "free", note: "Full free afternoon. Rest, go out, do what you want — you've earned it." },
-          { t: "8:30–9:30 PM", l: "Wind down + Outlook prep", type: "wind-down", note: "10 min Outlook setup for the week. Then proper wind-down before Monday." },
-          { t: "9:30 PM", l: "Lights out", type: "sleep" },
-        ],
-      },
-    },
   },
 };
+
+const WORKOUT_NOTE_EVE = (session) =>
+  `Eat during the 4:55 PM long study break — pre-workout meal window. Today: Session ${session.label} (${session.est}). Workout ends around 6:15–6:20 PM, giving you 3+ hours before sleep — plenty of buffer. Resistance training is also forgiving on sleep quality.`;
+
+const WORKOUT_NOTE_SAT = (session) =>
+  `Best timing of the week: finishing by ~8:20 AM puts 13+ hours between the workout and bedtime — zero sleep interference. Post-exercise cognition is enhanced for 1–2 hrs afterward, so your review right after is a bonus. Today: Session ${session.label} (${session.est}).`;
+
+const buildWorkoutBlock = (timeStr, noteBuilder, subjects) => ({
+  t: timeStr,
+  l: "Workout",
+  type: "workout",
+  noteBuilder,
+  subjects,
+});
+
+const SAT_MORNING_BASE = [
+  { t: "7:00–7:15 AM", l: "Wake up + quick prep", type: "personal", note: "Set your alarm for 7:00 AM the night before. 15 min to change, hydrate, and get ready." },
+  // workout injected dynamically
+  { t: "8:15–8:35 AM", l: "Shower + breakfast", type: "buffer", note: "Post-workout shower + real breakfast. Protein-rich — you earned it." },
+  { t: "8:35–9:00 AM", l: "Light review + task check", type: "study-opt",
+    note: "Weekends are for recharging. 25 min max — scan what's due Monday, finish any tiny hanging tasks, then close the books.",
+    subjects: ["Check what's due Monday", "Finish any task under 10 min", "Stop at 9:00 — no exceptions"] },
+];
+
+function buildSatMorning(session) {
+  return [
+    SAT_MORNING_BASE[0],
+    {
+      t: "7:15–8:15 AM",
+      l: `Workout — Session ${session.label}`,
+      type: "workout",
+      note: WORKOUT_NOTE_SAT(session),
+      subjects: session.subjects,
+    },
+    SAT_MORNING_BASE[1],
+    SAT_MORNING_BASE[2],
+  ];
+}
+
+function buildSchedule(session) {
+  const workoutBlockEve = {
+    t: "5:15–6:15 PM",
+    l: `Workout — Session ${session.label}`,
+    type: "workout",
+    note: WORKOUT_NOTE_EVE(session),
+    subjects: session.subjects,
+  };
+
+  const SAT_MORNING = buildSatMorning(session);
+
+  return {
+    Mon: {
+      label: "Monday", sub: `School + Study + 💪 Workout 5:15–6:15 PM (${session.label})`,
+      tip: `Workout day. Back-to-back Mon→Tue is fine with a split — different muscle groups each day. Eat during the 4:55 PM long break, then train 5:15–6:15 PM (${session.est}). The ~3 hour buffer before sleep is comfortable. Today's session: ${session.label}.`,
+      blocks: [
+        { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
+        { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
+        { t: "2:40–3:00 PM", l: "Decompress + snack", type: "buffer", note: "Non-negotiable buffer — your brain needs this after 7+ hrs of school." },
+        { t: "3:00–5:15 PM", l: "Main Study Block", type: "study", pom: 4,
+          subjects: ["Pomodoro 1: 3:00–3:25 → History (hardest first)", "Break: 3:25–3:30", "Pomodoro 2: 3:30–3:55 → History continued", "Break: 3:55–4:00", "Pomodoro 3: 4:00–4:25 → Psychology", "Break: 4:25–4:30", "Pomodoro 4: 4:30–4:55 → English / overflow", "Long break: 4:55–5:15 → 🍽️ Eat dinner here — pre-workout meal window"] },
+        workoutBlockEve,
+        { t: "6:15–6:45 PM", l: "Shower + protein", type: "buffer", note: "Protein within 30–60 min post-workout. Recovery time — not study time." },
+        { t: "6:45–8:30 PM", l: "Free time", type: "free" },
+        { t: "8:30–9:30 PM", l: "Wind down + prep", type: "wind-down", note: "No screens after 9 PM. Lay out tomorrow's things, check Outlook." },
+        { t: "9:30 PM", l: "Lights out", type: "sleep" },
+      ],
+    },
+
+    Tue: {
+      label: "Tuesday", sub: `School + Study + 💪 Workout 5:15–6:15 PM (${session.label})`,
+      tip: `Workout day. Eat your main meal during the 4:55 PM long break, then train 5:15–6:15 PM (${session.est}). The ~3 hour buffer before sleep is comfortable. Today's session: ${session.label}.`,
+      blocks: [
+        { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
+        { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
+        { t: "2:40–3:00 PM", l: "Decompress + snack", type: "buffer", note: "Non-negotiable buffer — recharge before studying." },
+        { t: "3:00–5:15 PM", l: "Main Study Block", type: "study", pom: 4,
+          subjects: ["Pomodoro 1: 3:00–3:25 → History (hardest first)", "Break: 3:25–3:30", "Pomodoro 2: 3:30–3:55 → History continued", "Break: 3:55–4:00", "Pomodoro 3: 4:00–4:25 → Psychology", "Break: 4:25–4:30", "Pomodoro 4: 4:30–4:55 → English / overflow", "Long break: 4:55–5:15 → 🍽️ Eat dinner here — pre-workout meal window"] },
+        workoutBlockEve,
+        { t: "6:15–6:45 PM", l: "Shower + protein", type: "buffer", note: "Protein shake or meal within 30–60 min post-workout. Keep this block calm — recovery, not free time." },
+        { t: "6:45–8:30 PM", l: "Free time", type: "free" },
+        { t: "8:30–9:30 PM", l: "Wind down + prep", type: "wind-down", note: "No screens after 9 PM. Lay out tomorrow's things, check Outlook." },
+        { t: "9:30 PM", l: "Lights out", type: "sleep" },
+      ],
+    },
+
+    Wed: {
+      label: "Wednesday", sub: "Short Day — Home 12:40 PM + Lion Dance (4:30–8:30)",
+      tip: "Short day = your second-best study window of the week. You have 3+ hours before practice. Use it — this is your buffer for the whole week. No workout today — Lion Dance is physically demanding and you trained yesterday.",
+      blocks: [
+        { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
+        { t: "7:00 AM–12:40 PM", l: "School (Short Day)", type: "school", note: "Early dismissal — you're home by 12:40." },
+        { t: "12:40–1:00 PM", l: "Decompress + lunch", type: "buffer", note: "Eat, decompress. Big study block ahead." },
+        { t: "1:00–3:30 PM", l: "Main Study Block", type: "study", pom: 5,
+          subjects: ["Pomodoro 1: 1:00–1:25 → History (hardest, do it fresh)", "Break: 1:25–1:30", "Pomodoro 2: 1:30–1:55 → History continued", "Break: 1:55–2:00", "Pomodoro 3: 2:00–2:25 → Psychology", "Break: 2:25–2:30", "Pomodoro 4: 2:30–2:55 → English", "Break: 2:55–3:00", "Pomodoro 5: 3:00–3:25 → overflow / review", "Wind down: 3:25–3:30"] },
+        { t: "3:30–4:30 PM", l: "Long break + pack for practice", type: "buffer", note: "Rest up and get ready — you've earned a proper break. Don't study during this." },
+        { t: "4:30–8:30 PM", l: "Lion Dance Practice", type: "lion-dance" },
+        { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down", note: "Light review optional — max 20 min. No new material. You earned rest." },
+        { t: "9:30 PM", l: "Lights out", type: "sleep" },
+      ],
+    },
+
+    Thu: {
+      variants: {
+        practice: {
+          label: "Thursday", sub: "School + Lion Dance (3:30–8:00 PM) — No Workout",
+          tip: "Practice day: no time or energy for a workout. Skip and recover — the rotation holds, just pick up the same letter next workout slot.",
+          blocks: [
+            { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
+            { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
+            { t: "2:40–3:30 PM", l: "Decompress + pack bag", type: "buffer", note: "Eat a snack and pack your bag — the 3:30 start already accounts for travel." },
+            { t: "3:30–8:00 PM", l: "Lion Dance Practice", type: "lion-dance" },
+            { t: "8:00–8:30 PM", l: "Decompress + snack", type: "buffer", note: "Big practice — refuel before wind down. No studying tonight." },
+            { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down", note: "Check tomorrow's assignments in Outlook. Max 10-min light review only." },
+            { t: "9:30 PM", l: "Lights out", type: "sleep" },
+          ],
+        },
+        free: {
+          label: "Thursday", sub: `School + Study + 💪 Workout 5:15–6:15 PM (${session.label})`,
+          tip: `Lucky free Thursday — same structure as Tuesday. Today's session: ${session.label} (${session.est}). If you're sore from Wednesday's Lion Dance, reduce load by ~20% but keep the session.`,
+          blocks: [
+            { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
+            { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
+            { t: "2:40–3:00 PM", l: "Decompress + snack", type: "buffer", note: "No rush today — full evening ahead." },
+            { t: "3:00–5:15 PM", l: "Main Study Block", type: "study", pom: 4,
+              subjects: ["Pomodoro 1: History (if still pending from Mon–Wed)", "Pomodoro 2: English essay drafting", "Pomodoro 3: Psychology deep review", "Pomodoro 4: Any overflow / reading", "Long break: 4:55–5:15 → 🍽️ Eat dinner here — pre-workout meal window"] },
+            workoutBlockEve,
+            { t: "6:15–6:45 PM", l: "Shower + protein", type: "buffer", note: "Protein within 30–60 min post-workout. Recovery time — not study time." },
+            { t: "6:45–8:30 PM", l: "Free time", type: "free" },
+            { t: "8:30–9:30 PM", l: "Wind down + prep", type: "wind-down", note: "Check what's due Friday. Set Outlook blocks for the rest of the week." },
+            { t: "9:30 PM", l: "Lights out", type: "sleep" },
+          ],
+        },
+      },
+    },
+
+    Fri: {
+      label: "Friday", sub: "School + Lion Dance (4:30–8:30 PM)",
+      tip: "Tight but usable 90-min window after school before practice. Prioritize finishing anything due Monday — don't leave the weekend carrying schoolwork.",
+      blocks: [
+        { t: "6:30–7:00 AM", l: "Wake up & get ready", type: "personal" },
+        { t: "7:00 AM–2:40 PM", l: "School", type: "school" },
+        { t: "2:40–3:00 PM", l: "Decompress + snack", type: "buffer", note: "Quick reset before your study window." },
+        { t: "3:00–4:30 PM", l: "Pre-Practice Study Block", type: "study", pom: 2,
+          subjects: ["Pomodoro 1: 3:00–3:25 → Most urgent leftover work (History or English)", "Break: 3:25–3:30", "Pomodoro 2: 3:30–3:55 → Psychology review or weekend preview", "Wind down / pack bag: 3:55–4:30"] },
+        { t: "4:30–8:30 PM", l: "Lion Dance Practice", type: "lion-dance" },
+        { t: "8:30–9:00 PM", l: "Decompress + wind down", type: "wind-down", note: "Big practice night — no studying. Lay out Saturday things and get to bed." },
+        { t: "9:00 PM", l: "Lights out", type: "sleep" },
+      ],
+    },
+
+    Sat: {
+      variants: {
+        temple: {
+          label: "Saturday", sub: `💪 Workout 7:15–8:15 AM (${session.label}) · Temple (11:00 AM–5:30 PM)`,
+          tip: `Workout done before 8:15 AM, light review done by 9:00 AM — roll into Temple with everything handled. Today's session: ${session.label}.`,
+          blocks: [
+            ...SAT_MORNING,
+            { t: "9:00–11:00 AM", l: "Free time + get ready for Temple", type: "free", note: "Plenty of time to get ready — the 11:00 AM start already accounts for travel." },
+            { t: "11:00 AM–5:30 PM", l: "Temple", type: "temple" },
+            { t: "5:30–6:30 PM", l: "Decompress + dinner", type: "buffer", note: "Long day — decompress properly before anything else." },
+            { t: "6:30–8:30 PM", l: "Free time", type: "free" },
+            { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down" },
+            { t: "9:30 PM", l: "Lights out", type: "sleep" },
+          ],
+        },
+        short: {
+          label: "Saturday", sub: `💪 Workout 7:15–8:15 AM (${session.label}) · Temple Short Day (11:00 AM–4:30 PM)`,
+          tip: `Home by 4:30 — that's 5 extra hours compared to the full temple day. Workout is already done, review is done. The afternoon is genuinely yours. Today's session: ${session.label}.`,
+          blocks: [
+            ...SAT_MORNING,
+            { t: "9:00–11:00 AM", l: "Free time + get ready for Temple", type: "free", note: "Short day today — home by 4:30." },
+            { t: "11:00 AM–4:30 PM", l: "Temple", type: "temple" },
+            { t: "4:30–5:30 PM", l: "Decompress + dinner", type: "buffer", note: "You're home early — take a real break." },
+            { t: "5:30–8:30 PM", l: "Free time", type: "free" },
+            { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down" },
+            { t: "9:30 PM", l: "Lights out", type: "sleep" },
+          ],
+        },
+        nope: {
+          label: "Saturday", sub: `💪 Workout 7:15–8:15 AM (${session.label}) · Free Day`,
+          tip: `Rare full free Saturday. Workout done early, 25-min review done by 9:00 AM — the entire rest of the day is yours. Today's session: ${session.label}.`,
+          blocks: [
+            ...SAT_MORNING,
+            { t: "9:00 AM–12:00 PM", l: "Free time", type: "free" },
+            { t: "12:00–1:00 PM", l: "Lunch", type: "buffer" },
+            { t: "1:00–6:00 PM", l: "Free time / personal", type: "free" },
+            { t: "6:00–7:00 PM", l: "Dinner", type: "buffer" },
+            { t: "7:00–8:30 PM", l: "Free time", type: "free" },
+            { t: "8:30–9:30 PM", l: "Wind down", type: "wind-down", note: "Quick Outlook check for the week ahead. Then proper wind-down." },
+            { t: "9:30 PM", l: "Lights out", type: "sleep" },
+          ],
+        },
+      },
+    },
+
+    Sun: {
+      variants: {
+        viet: {
+          label: "Sunday", sub: "Vietnamese School (12:00–4:00 PM)",
+          tip: "Light morning, then school, then free. A 30-min review is all you need — no heavy study on Sundays. The recharge matters.",
+          blocks: [
+            { t: "9:00–9:30 AM", l: "Light review + weekly check", type: "study-opt",
+              note: "30 min max. Scan what's due this week, set Outlook blocks, finish anything under 10 min. Then stop.",
+              subjects: ["Check what's due Mon–Tue", "Set Outlook study blocks for the week", "Any task under 10 min — do it now or drop it"] },
+            { t: "9:30 AM–12:00 PM", l: "Free time / prep", type: "free" },
+            { t: "12:00–4:00 PM", l: "Vietnamese School", type: "viet-school" },
+            { t: "4:00–8:30 PM", l: "Decompress + dinner + free time", type: "free", note: "Rest, eat, do whatever. No study tonight." },
+            { t: "8:30–9:30 PM", l: "Wind down + Outlook check", type: "wind-down", note: "10 min: confirm Outlook blocks are in place for the week. Then wind down properly." },
+            { t: "9:30 PM", l: "Lights out", type: "sleep" },
+          ],
+        },
+        free: {
+          label: "Sunday", sub: "Free Day — Light Review Only",
+          tip: "Full free Sunday. Do the 30-min review so Monday doesn't blindside you, then genuinely rest. This is the most important recovery day of your week.",
+          blocks: [
+            { t: "9:00–9:30 AM", l: "Light review + weekly check", type: "study-opt",
+              note: "No school today — keep it genuinely light. Scan the week ahead and set Outlook, nothing more.",
+              subjects: ["Check what's due Mon–Tue", "Set Outlook study blocks for the week", "Stop at 9:30 — rest day"] },
+            { t: "9:30 AM–12:00 PM", l: "Free time", type: "free" },
+            { t: "12:00–1:00 PM", l: "Lunch", type: "buffer" },
+            { t: "1:00–8:30 PM", l: "Free time / personal / dinner", type: "free", note: "Full free afternoon. Rest, go out, do what you want — you've earned it." },
+            { t: "8:30–9:30 PM", l: "Wind down + Outlook prep", type: "wind-down", note: "10 min Outlook setup for the week. Then proper wind-down before Monday." },
+            { t: "9:30 PM", l: "Lights out", type: "sleep" },
+          ],
+        },
+      },
+    },
+  };
+}
+
+const ROTATION_ORDER = ["A", "C", "B"];
 
 const DAY_KEYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -229,7 +306,7 @@ function PomRow({ count }) {
         <div key={i} style={{
           width: 18, height: 18, borderRadius: "50%", background: "#E85B2F",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 10, color: "#fff", fontWeight: 700
+          fontSize: 10, color: "#fff", fontWeight: 700,
         }}>{i + 1}</div>
       ))}
       <span style={{ fontSize: 11, color: "#888", marginLeft: 2 }}>
@@ -276,7 +353,7 @@ function Block({ b }) {
             )}
             {isWorkout && !open && (
               <span style={{ fontSize: 10, background: s.b, color: "#fff", borderRadius: 10, padding: "1px 6px", fontWeight: 600 }}>
-                2 hrs
+                ~1 hr
               </span>
             )}
             {expandable && (
@@ -313,10 +390,7 @@ function Block({ b }) {
 
 function ModeToggle({ label, options, value, onChange }) {
   return (
-    <div style={{
-      display: "flex", gap: 6, marginBottom: 10, background: "#fff",
-      borderRadius: 10, padding: "8px 10px", alignItems: "center",
-    }}>
+    <div style={{ display: "flex", gap: 6, marginBottom: 10, background: "#fff", borderRadius: 10, padding: "8px 10px", alignItems: "center" }}>
       <span style={{ fontSize: 11, color: "#888", marginRight: 4, fontWeight: 600, whiteSpace: "nowrap" }}>{label}</span>
       {options.map(({ key, label: lbl, color }) => {
         const active = value === key;
@@ -337,39 +411,62 @@ function ModeToggle({ label, options, value, onChange }) {
   );
 }
 
-function WorkoutWeekPanel() {
+function RotationPanel({ rotation, onAdvance }) {
+  const keys = ROTATION_ORDER;
+  const current = SESSIONS[rotation];
+  const next = SESSIONS[keys[(keys.indexOf(rotation) + 1) % 3]];
+  const prev = SESSIONS[keys[(keys.indexOf(rotation) + 2) % 3]];
+
   return (
     <div style={{ background: "#fff", borderRadius: 12, padding: "14px 14px", marginBottom: 10, borderLeft: "4px solid #E84040" }}>
       <div style={{ fontSize: 11, fontWeight: 700, color: "#E84040", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
-        💪 Workout Schedule This Week
+        💪 Workout Rotation
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {[
-          { day: "Tuesday",  time: "5:15–7:15 PM",            note: "2h15m before sleep",   icon: "💪" },
-          { day: "Thursday", time: "5:15–7:15 PM (no practice)", note: "Skip if Lion Dance", icon: "?" },
-          { day: "Saturday", time: "7:15–9:15 AM",            note: "12+ hrs before sleep ✓✓", icon: "💪" },
-        ].map(({ day, time, note, icon }) => (
-          <div key={day} style={{
-            display: "flex", alignItems: "center", gap: 10,
-            background: "#FFF2F2", borderRadius: 8, padding: "8px 10px"
-          }}>
-            <div style={{
-              width: 30, height: 30, borderRadius: "50%",
-              background: icon === "💪" ? "#E84040" : "#F5A623",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 13, flexShrink: 0
-            }}>{icon}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#7A0A0A" }}>{day} · {time}</div>
-              <div style={{ fontSize: 11, color: "#555" }}>Full-Body · 2 hours</div>
-            </div>
-            <div style={{ fontSize: 10, color: icon === "💪" ? "#27500A" : "#7A4E10", fontWeight: 600, textAlign: "right" }}>{note}</div>
+
+      {/* Current session */}
+      <div style={{ background: "#FFF2F2", borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
+        <div style={{ fontSize: 10, color: "#999", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>Next session</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <span style={{
+              fontSize: 20, fontWeight: 800,
+              color: current.color,
+            }}>{current.label}</span>
+            <div style={{ fontSize: 11, color: "#777", marginTop: 2 }}>{current.est} · Dumbbell only</div>
           </div>
-        ))}
+          <button onClick={onAdvance} style={{
+            background: "#E84040", color: "#fff", border: "none",
+            borderRadius: 8, padding: "7px 12px", fontWeight: 700,
+            fontSize: 11, cursor: "pointer", fontFamily: "inherit",
+          }}>
+            Mark done →
+          </button>
+        </div>
       </div>
+
+      {/* Queue */}
+      <div style={{ display: "flex", gap: 6 }}>
+        {keys.map((k, i) => {
+          const s = SESSIONS[k];
+          const isCurrent = k === rotation;
+          return (
+            <div key={k} style={{
+              flex: 1, textAlign: "center", padding: "8px 6px",
+              borderRadius: 8,
+              background: isCurrent ? `${s.color}20` : "#F7F6F2",
+              border: `1.5px solid ${isCurrent ? s.color : "#E8E7E3"}`,
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: isCurrent ? s.color : "#CCC" }}>{k}</div>
+              <div style={{ fontSize: 9, color: isCurrent ? s.color : "#AAAAAA", marginTop: 2, lineHeight: 1.3 }}>
+                {k === "A" ? "Push" : k === "B" ? "Pull" : "Legs+Core"}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <div style={{ marginTop: 10, padding: "8px 10px", background: "#F0F7FF", borderRadius: 8, fontSize: 11, color: "#0C447C", lineHeight: 1.5 }}>
-        <strong>48h recovery:</strong> Tue → Thu = 48h ✓ · Thu → Sat = 48h ✓ · Sat → Tue = 72h ✓<br/>
-        On Lion Dance Thursdays: 2 sessions/week (Tue + Sat) still drives hypertrophy — volume is what matters.
+        <strong>How it works:</strong> A → B → C → A → … No fixed days. Workout slots: Mon, Tue, free Thu, Sat. Lion Dance conflict? Skip — same letter picks up next time. No lost progress.
       </div>
     </div>
   );
@@ -393,11 +490,15 @@ export default function App() {
   const [thuMode, setThuMode] = useState("practice");
   const [satMode, setSatMode] = useState("temple");
   const [sunMode, setSunMode] = useState("viet");
-  const [showWeekPanel, setShowWeekPanel] = useState(false);
+  const [showRotationPanel, setShowRotationPanel] = useState(false);
+  const [rotation, setRotation] = useState("A");
 
   const isThu = day === "Thu";
   const isSat = day === "Sat";
   const isSun = day === "Sun";
+
+  const session = SESSIONS[rotation];
+  const SCHEDULE = buildSchedule(session);
 
   const curr = isThu ? SCHEDULE.Thu.variants[thuMode]
     : isSat ? SCHEDULE.Sat.variants[satMode]
@@ -405,7 +506,12 @@ export default function App() {
     : SCHEDULE[day];
 
   const accent = DAY_ACCENT[day];
-  const isWorkoutDay = day === "Tue" || day === "Sat" || (day === "Thu" && thuMode === "free");
+  const isWorkoutDay = day === "Mon" || day === "Tue" || day === "Sat" || (day === "Thu" && thuMode === "free");
+
+  function advanceRotation() {
+    const idx = ROTATION_ORDER.indexOf(rotation);
+    setRotation(ROTATION_ORDER[(idx + 1) % 3]);
+  }
 
   return (
     <div style={{
@@ -423,21 +529,22 @@ export default function App() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
             <h1 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A1A", letterSpacing: "-0.3px" }}>My Weekly Schedule</h1>
-            <p style={{ fontSize: 11, color: "#999", marginTop: 3 }}>Tap any block with ▼ to expand • Study blocks show Pomodoro breakdown</p>
+            <p style={{ fontSize: 11, color: "#999", marginTop: 3 }}>Tap any block with ▼ to expand · Study blocks show Pomodoro breakdown</p>
           </div>
-          <button onClick={() => setShowWeekPanel(v => !v)} style={{
-            background: showWeekPanel ? "#E84040" : "#FFF2F2",
-            color: showWeekPanel ? "#fff" : "#E84040",
+          <button onClick={() => setShowRotationPanel(v => !v)} style={{
+            background: showRotationPanel ? "#E84040" : "#FFF2F2",
+            color: showRotationPanel ? "#fff" : "#E84040",
             border: "1.5px solid #E84040", borderRadius: 8,
             padding: "5px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer",
           }}>
-            💪 Week
+            💪 {rotation}
           </button>
         </div>
       </div>
 
-      {showWeekPanel && <WorkoutWeekPanel />}
+      {showRotationPanel && <RotationPanel rotation={rotation} onAdvance={advanceRotation} />}
 
+      {/* Day tabs */}
       <div style={{ display: "flex", gap: 5, marginBottom: 10, flexWrap: "wrap" }}>
         {DAY_KEYS.map(d => {
           const active = day === d;
@@ -451,11 +558,11 @@ export default function App() {
               position: "relative",
             }}>
               {d}
-              {(d === "Tue" || d === "Sat") && (
+              {(d === "Mon" || d === "Tue" || d === "Sat") && (
                 <span style={{
                   position: "absolute", top: -4, right: -4,
                   width: 8, height: 8, borderRadius: "50%",
-                  background: "#E84040", border: "1.5px solid #F7F6F2"
+                  background: "#E84040", border: "1.5px solid #F7F6F2",
                 }} />
               )}
             </button>
@@ -469,7 +576,6 @@ export default function App() {
           { key: "free",     label: "💪 No Practice",  color: "#E84040" },
         ]} />
       )}
-
       {isSat && (
         <ModeToggle label="Saturday:" value={satMode} onChange={setSatMode} options={[
           { key: "temple", label: "⛩️ Temple (5:30)", color: "#9B8FE8" },
@@ -477,7 +583,6 @@ export default function App() {
           { key: "nope",   label: "☀️ No Temple",     color: "#F5A623" },
         ]} />
       )}
-
       {isSun && (
         <ModeToggle label="Sunday:" value={sunMode} onChange={setSunMode} options={[
           { key: "viet", label: "🇻🇳 Viet. School", color: "#E8834B" },
@@ -485,6 +590,7 @@ export default function App() {
         ]} />
       )}
 
+      {/* Day header card */}
       <div style={{
         background: "#fff", borderRadius: 12,
         borderLeft: `4px solid ${accent}`,
@@ -497,11 +603,12 @@ export default function App() {
           </div>
           {isWorkoutDay && (
             <div style={{
-              background: "#FFF2F2", border: "1.5px solid #E84040",
+              background: `${SESSIONS[rotation].color}20`,
+              border: `1.5px solid ${SESSIONS[rotation].color}`,
               borderRadius: 8, padding: "3px 8px",
-              fontSize: 11, color: "#E84040", fontWeight: 700,
+              fontSize: 11, color: SESSIONS[rotation].color, fontWeight: 700,
             }}>
-              Workout Day
+              Session {rotation}
             </div>
           )}
         </div>
@@ -519,6 +626,7 @@ export default function App() {
         {curr.blocks.map((b, i) => <Block key={i} b={b} />)}
       </div>
 
+      {/* Pomodoro reference */}
       <div style={{ background: "#fff", borderRadius: 12, padding: "14px 14px", marginBottom: 10 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: "#999", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
           Pomodoro Method
@@ -541,6 +649,7 @@ export default function App() {
         </div>
       </div>
 
+      {/* Why this timing works */}
       <div style={{ background: "#fff", borderRadius: 12, padding: "14px 14px", marginBottom: 10, borderLeft: "4px solid #E84040" }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: "#999", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
           Why This Timing Works
@@ -548,18 +657,19 @@ export default function App() {
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {[
             ["📈 Evening > Morning", "Afternoon/evening resistance training produces up to 84% more muscle gain than morning sessions (Küüsmaa et al., 2016). Your Tue/Thu 5:15 PM timing is in the optimal window."],
-            ["💤 2h15m Buffer (Tue/Thu)", "Ending at 7:15 PM gives you 2h15m before sleep — the tighter end of the gray zone, but resistance training is more forgiving on sleep than cardio. If you notice issues, shift to start at 5:00 PM."],
-            ["🌅 Saturday AM", "Finishing at 9:15 AM = 12+ hours before bedtime. Zero sleep interference, plus a post-workout cognitive boost for the review block right after."],
-            ["🔄 48h Recovery", "Full-body workouts need 48h between sessions. Tue→Thu, Thu→Sat, Sat→Tue all meet that target."],
+            ["💤 3h+ Buffer (Tue/Thu)", "Old plan ended at 7:15 PM — 2h15m before sleep. New split ends at ~6:15 PM — 3h15m buffer. Comfortably in the safe zone for sleep quality."],
+            ["🌅 Saturday AM", "Finishing at ~8:15 AM = 13+ hours before bedtime. Zero sleep interference, plus a post-workout cognitive boost for the review block right after."],
+            ["🔄 Mon→Tue Back-to-Back is Fine", "With a split routine, consecutive days are safe as long as different muscle groups are targeted. Mon Push → Tue Pull, for example, means chest/shoulders/triceps vs back/biceps/forearms — zero overlap, full recovery for each."],
             ["🦁 Lion Dance Counts", "Wed/Thu-practice/Fri Lion Dance is physically demanding. Skipping the workout on practice Thursdays is smart load management, not laziness."],
           ].map(([title, body]) => (
             <div key={title} style={{ fontSize: 11, color: "#555", lineHeight: 1.5 }}>
-              <strong style={{ color: "#1A1A1A" }}>{title}</strong><br/>{body}
+              <strong style={{ color: "#1A1A1A" }}>{title}</strong><br />{body}
             </div>
           ))}
         </div>
       </div>
 
+      {/* Outlook legend */}
       <div style={{ background: "#fff", borderRadius: 12, padding: "14px 14px" }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: "#999", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
           Outlook Color Guide
@@ -573,7 +683,7 @@ export default function App() {
           ))}
         </div>
         <div style={{ marginTop: 10, fontSize: 11, color: "#888", lineHeight: 1.6, borderTop: "1px solid #F0EFEB", paddingTop: 10 }}>
-          <strong style={{ color: "#555" }}>Sunday setup (10 min):</strong> Open Outlook weekly view → set 9:30 PM hard-stop every night → add 💪 blocks: Tue 5:15–7:15 PM, Sat 7:15–9:15 AM.
+          <strong style={{ color: "#555" }}>Sunday setup (10 min):</strong> Open Outlook weekly view → set 9:30 PM hard-stop every night → add workout blocks: Mon 5:15–6:15 PM, Tue 5:15–6:15 PM, Sat 7:15–8:15 AM. Check rotation button top-right to see which session is next.
         </div>
       </div>
     </div>
